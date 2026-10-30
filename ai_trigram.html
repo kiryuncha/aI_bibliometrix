@@ -1,0 +1,222 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100vw;
+                 height: 100vh;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100vw;
+                 height: 100vh;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "black"}, "group": 8, "id": "challenge large language", "label": "challenge large language", "shape": "dot", "size": 12.0, "title": "Node: challenge large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "prediction use machine", "label": "prediction use machine", "shape": "dot", "size": 12.0, "title": "Node: prediction use machine; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 0, "id": "use graph neural", "label": "use graph neural", "shape": "dot", "size": 12.0, "title": "Node: use graph neural; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 8, "id": "fine-tune large language", "label": "fine-tune large language", "shape": "dot", "size": 12.0, "title": "Node: fine-tune large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 5, "id": "use generative artificial", "label": "use generative artificial", "shape": "dot", "size": 12.0, "title": "Node: use generative artificial; Degree: 1; Community: 5"}, {"font": {"color": "black"}, "group": 8, "id": "strategy large language", "label": "strategy large language", "shape": "dot", "size": 12.0, "title": "Node: strategy large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence method", "label": "artificial intelligence method", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence method; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 8, "id": "generative large language", "label": "generative large language", "shape": "dot", "size": 12.0, "title": "Node: generative large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 7, "id": "fraud detection use", "label": "fraud detection use", "shape": "dot", "size": 22.040163305595385, "title": "Node: fraud detection use; Degree: 3; Community: 7"}, {"font": {"color": "black"}, "group": 8, "id": "prompt large language", "label": "prompt large language", "shape": "dot", "size": 12.0, "title": "Node: prompt large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "language model comprehensive", "label": "language model comprehensive", "shape": "dot", "size": 12.0, "title": "Node: language model comprehensive; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "graph large language", "label": "graph large language", "shape": "dot", "size": 12.0, "title": "Node: graph large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "language model agent", "label": "language model agent", "shape": "dot", "size": 12.0, "title": "Node: language model agent; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 0, "id": "graph neural network", "label": "graph neural network", "shape": "dot", "size": 29.783576495595707, "title": "Node: graph neural network; Degree: 7; Community: 0"}, {"font": {"color": "black"}, "group": 0, "id": "heterogeneous graph neural", "label": "heterogeneous graph neural", "shape": "dot", "size": 12.0, "title": "Node: heterogeneous graph neural; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence healthcare", "label": "artificial intelligence healthcare", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence healthcare; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence explainable", "label": "artificial intelligence explainable", "shape": "dot", "size": 18.334637760216484, "title": "Node: artificial intelligence explainable; Degree: 2; Community: 2"}, {"font": {"color": "black"}, "group": 3, "id": "neural network base", "label": "neural network base", "shape": "dot", "size": 12.0, "title": "Node: neural network base; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 1, "id": "algorithm global optimization", "label": "algorithm global optimization", "shape": "dot", "size": 26.708573386381012, "title": "Node: algorithm global optimization; Degree: 5; Community: 1"}, {"font": {"color": "black"}, "group": 8, "id": "base large language", "label": "base large language", "shape": "dot", "size": 12.0, "title": "Node: base large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "language model meet", "label": "language model meet", "shape": "dot", "size": 12.0, "title": "Node: language model meet; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "retrieval-augment large language", "label": "retrieval-augment large language", "shape": "dot", "size": 12.0, "title": "Node: retrieval-augment large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 1, "id": "engineering design problem", "label": "engineering design problem", "shape": "dot", "size": 18.334637760216484, "title": "Node: engineering design problem; Degree: 2; Community: 1"}, {"font": {"color": "black"}, "group": 8, "id": "hallucination large language", "label": "hallucination large language", "shape": "dot", "size": 12.0, "title": "Node: hallucination large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "machine learning deep", "label": "machine learning deep", "shape": "dot", "size": 22.040163305595385, "title": "Node: machine learning deep; Degree: 3; Community: 4"}, {"font": {"color": "black"}, "group": 8, "id": "analysis large language", "label": "analysis large language", "shape": "dot", "size": 12.0, "title": "Node: analysis large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "classification use machine", "label": "classification use machine", "shape": "dot", "size": 12.0, "title": "Node: classification use machine; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 8, "id": "generation large language", "label": "generation large language", "shape": "dot", "size": 12.0, "title": "Node: generation large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 2, "id": "explainable artificial intelligence", "label": "explainable artificial intelligence", "shape": "dot", "size": 35.44094516794141, "title": "Node: explainable artificial intelligence; Degree: 13; Community: 2"}, {"font": {"color": "black"}, "group": 4, "id": "analysis use deep", "label": "analysis use deep", "shape": "dot", "size": 12.0, "title": "Node: analysis use deep; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 3, "id": "base convolutional neural", "label": "base convolutional neural", "shape": "dot", "size": 12.0, "title": "Node: base convolutional neural; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence framework", "label": "artificial intelligence framework", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence framework; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 4, "id": "use machine learning", "label": "use machine learning", "shape": "dot", "size": 32.08032661119077, "title": "Node: use machine learning; Degree: 9; Community: 4"}, {"font": {"color": "black"}, "group": 8, "id": "language model clinical", "label": "language model clinical", "shape": "dot", "size": 12.0, "title": "Node: language model clinical; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 2, "id": "use explainable artificial", "label": "use explainable artificial", "shape": "dot", "size": 12.0, "title": "Node: use explainable artificial; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 8, "id": "language model medical", "label": "language model medical", "shape": "dot", "size": 12.0, "title": "Node: language model medical; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 3, "id": "convolutional neural network", "label": "convolutional neural network", "shape": "dot", "size": 32.08032661119077, "title": "Node: convolutional neural network; Degree: 9; Community: 3"}, {"font": {"color": "black"}, "group": 2, "id": "survey explainable artificial", "label": "survey explainable artificial", "shape": "dot", "size": 12.0, "title": "Node: survey explainable artificial; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 4, "id": "machine learning method", "label": "machine learning method", "shape": "dot", "size": 12.0, "title": "Node: machine learning method; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 2, "id": "learning explainable artificial", "label": "learning explainable artificial", "shape": "dot", "size": 12.0, "title": "Node: learning explainable artificial; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 5, "id": "use artificial intelligence", "label": "use artificial intelligence", "shape": "dot", "size": 12.0, "title": "Node: use artificial intelligence; Degree: 1; Community: 5"}, {"font": {"color": "black"}, "group": 4, "id": "deep learning technique", "label": "deep learning technique", "shape": "dot", "size": 22.040163305595385, "title": "Node: deep learning technique; Degree: 3; Community: 4"}, {"font": {"color": "black"}, "group": 8, "id": "use large language", "label": "use large language", "shape": "dot", "size": 12.0, "title": "Node: use large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "detection use machine", "label": "detection use machine", "shape": "dot", "size": 18.334637760216484, "title": "Node: detection use machine; Degree: 2; Community: 4"}, {"font": {"color": "black"}, "group": 1, "id": "global optimization engineering", "label": "global optimization engineering", "shape": "dot", "size": 22.040163305595385, "title": "Node: global optimization engineering; Degree: 3; Community: 1"}, {"font": {"color": "black"}, "group": 8, "id": "language model use", "label": "language model use", "shape": "dot", "size": 12.0, "title": "Node: language model use; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "machine learning algorithm", "label": "machine learning algorithm", "shape": "dot", "size": 12.0, "title": "Node: machine learning algorithm; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 8, "id": "large language model", "label": "large language model", "shape": "dot", "size": 45.0, "title": "Node: large language model; Degree: 37; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "learning deep learning", "label": "learning deep learning", "shape": "dot", "size": 22.040163305595385, "title": "Node: learning deep learning; Degree: 3; Community: 4"}, {"font": {"color": "black"}, "group": 8, "id": "potential large language", "label": "potential large language", "shape": "dot", "size": 12.0, "title": "Node: potential large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 5, "id": "artificial intelligence artificial", "label": "artificial intelligence artificial", "shape": "dot", "size": 18.334637760216484, "title": "Node: artificial intelligence artificial; Degree: 2; Community: 5"}, {"font": {"color": "black"}, "group": 3, "id": "deep convolutional neural", "label": "deep convolutional neural", "shape": "dot", "size": 18.334637760216484, "title": "Node: deep convolutional neural; Degree: 2; Community: 3"}, {"font": {"color": "black"}, "group": 8, "id": "empower large language", "label": "empower large language", "shape": "dot", "size": 12.0, "title": "Node: empower large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "use deep learning", "label": "use deep learning", "shape": "dot", "size": 24.66927552043297, "title": "Node: use deep learning; Degree: 4; Community: 4"}, {"font": {"color": "black"}, "group": 3, "id": "graph convolutional neural", "label": "graph convolutional neural", "shape": "dot", "size": 12.0, "title": "Node: graph convolutional neural; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 7, "id": "credit card fraud", "label": "credit card fraud", "shape": "dot", "size": 18.334637760216484, "title": "Node: credit card fraud; Degree: 2; Community: 7"}, {"font": {"color": "black"}, "group": 8, "id": "multimodal large language", "label": "multimodal large language", "shape": "dot", "size": 12.0, "title": "Node: multimodal large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 5, "id": "impact generative artificial", "label": "impact generative artificial", "shape": "dot", "size": 12.0, "title": "Node: impact generative artificial; Degree: 1; Community: 5"}, {"font": {"color": "black"}, "group": 3, "id": "neural network model", "label": "neural network model", "shape": "dot", "size": 12.0, "title": "Node: neural network model; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 6, "id": "language model knowledge", "label": "language model knowledge", "shape": "dot", "size": 18.334637760216484, "title": "Node: language model knowledge; Degree: 2; Community: 6"}, {"font": {"color": "black"}, "group": 3, "id": "use convolutional neural", "label": "use convolutional neural", "shape": "dot", "size": 12.0, "title": "Node: use convolutional neural; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 7, "id": "card fraud detection", "label": "card fraud detection", "shape": "dot", "size": 18.334637760216484, "title": "Node: card fraud detection; Degree: 2; Community: 7"}, {"font": {"color": "black"}, "group": 8, "id": "language model inference", "label": "language model inference", "shape": "dot", "size": 12.0, "title": "Node: language model inference; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 0, "id": "neural network graph", "label": "neural network graph", "shape": "dot", "size": 12.0, "title": "Node: neural network graph; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence approach", "label": "artificial intelligence approach", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence approach; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 8, "id": "language model generate", "label": "language model generate", "shape": "dot", "size": 12.0, "title": "Node: language model generate; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "language model large", "label": "language model large", "shape": "dot", "size": 18.334637760216484, "title": "Node: language model large; Degree: 2; Community: 8"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence systematic", "label": "artificial intelligence systematic", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence systematic; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 8, "id": "model large language", "label": "model large language", "shape": "dot", "size": 18.334637760216484, "title": "Node: model large language; Degree: 2; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "language model LLMs", "label": "language model LLMs", "shape": "dot", "size": 12.0, "title": "Node: language model LLMs; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "detection use deep", "label": "detection use deep", "shape": "dot", "size": 12.0, "title": "Node: detection use deep; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 1, "id": "global optimization problem", "label": "global optimization problem", "shape": "dot", "size": 12.0, "title": "Node: global optimization problem; Degree: 1; Community: 1"}, {"font": {"color": "black"}, "group": 4, "id": "machine learning technique", "label": "machine learning technique", "shape": "dot", "size": 12.0, "title": "Node: machine learning technique; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 1, "id": "optimization engineering design", "label": "optimization engineering design", "shape": "dot", "size": 18.334637760216484, "title": "Node: optimization engineering design; Degree: 2; Community: 1"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence medical", "label": "artificial intelligence medical", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence medical; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 8, "id": "reasoning large language", "label": "reasoning large language", "shape": "dot", "size": 12.0, "title": "Node: reasoning large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "evaluate large language", "label": "evaluate large language", "shape": "dot", "size": 12.0, "title": "Node: evaluate large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 1, "id": "search algorithm global", "label": "search algorithm global", "shape": "dot", "size": 12.0, "title": "Node: search algorithm global; Degree: 1; Community: 1"}, {"font": {"color": "black"}, "group": 8, "id": "intelligence large language", "label": "intelligence large language", "shape": "dot", "size": 18.334637760216484, "title": "Node: intelligence large language; Degree: 2; Community: 8"}, {"font": {"color": "black"}, "group": 0, "id": "deep graph neural", "label": "deep graph neural", "shape": "dot", "size": 12.0, "title": "Node: deep graph neural; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 1, "id": "optimization algorithm global", "label": "optimization algorithm global", "shape": "dot", "size": 12.0, "title": "Node: optimization algorithm global; Degree: 1; Community: 1"}, {"font": {"color": "black"}, "group": 8, "id": "evaluation large language", "label": "evaluation large language", "shape": "dot", "size": 12.0, "title": "Node: evaluation large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 4, "id": "machine learning approach", "label": "machine learning approach", "shape": "dot", "size": 12.0, "title": "Node: machine learning approach; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 5, "id": "artificial intelligence chatbot", "label": "artificial intelligence chatbot", "shape": "dot", "size": 18.334637760216484, "title": "Node: artificial intelligence chatbot; Degree: 2; Community: 5"}, {"font": {"color": "black"}, "group": 8, "id": "leverage large language", "label": "leverage large language", "shape": "dot", "size": 12.0, "title": "Node: leverage large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "artificial intelligence large", "label": "artificial intelligence large", "shape": "dot", "size": 18.334637760216484, "title": "Node: artificial intelligence large; Degree: 2; Community: 8"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence model", "label": "artificial intelligence model", "shape": "dot", "size": 18.334637760216484, "title": "Node: artificial intelligence model; Degree: 2; Community: 2"}, {"font": {"color": "black"}, "group": 5, "id": "intelligence artificial intelligence", "label": "intelligence artificial intelligence", "shape": "dot", "size": 18.334637760216484, "title": "Node: intelligence artificial intelligence; Degree: 2; Community: 5"}, {"font": {"color": "black"}, "group": 3, "id": "quantum convolutional neural", "label": "quantum convolutional neural", "shape": "dot", "size": 12.0, "title": "Node: quantum convolutional neural; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 2, "id": "intelligence explainable artificial", "label": "intelligence explainable artificial", "shape": "dot", "size": 18.334637760216484, "title": "Node: intelligence explainable artificial; Degree: 2; Community: 2"}, {"font": {"color": "black"}, "group": 5, "id": "generative artificial intelligence", "label": "generative artificial intelligence", "shape": "dot", "size": 28.37480106581187, "title": "Node: generative artificial intelligence; Degree: 6; Community: 5"}, {"font": {"color": "black"}, "group": 4, "id": "image use deep", "label": "image use deep", "shape": "dot", "size": 12.0, "title": "Node: image use deep; Degree: 1; Community: 4"}, {"font": {"color": "black"}, "group": 3, "id": "neural network architecture", "label": "neural network architecture", "shape": "dot", "size": 12.0, "title": "Node: neural network architecture; Degree: 1; Community: 3"}, {"font": {"color": "black"}, "group": 8, "id": "language model survey", "label": "language model survey", "shape": "dot", "size": 12.0, "title": "Node: language model survey; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 2, "id": "artificial intelligence technique", "label": "artificial intelligence technique", "shape": "dot", "size": 12.0, "title": "Node: artificial intelligence technique; Degree: 1; Community: 2"}, {"font": {"color": "black"}, "group": 0, "id": "attack graph neural", "label": "attack graph neural", "shape": "dot", "size": 12.0, "title": "Node: attack graph neural; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 0, "id": "learning graph neural", "label": "learning graph neural", "shape": "dot", "size": 12.0, "title": "Node: learning graph neural; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 8, "id": "learning large language", "label": "learning large language", "shape": "dot", "size": 12.0, "title": "Node: learning large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 8, "id": "bias large language", "label": "bias large language", "shape": "dot", "size": 12.0, "title": "Node: bias large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 3, "id": "use deep convolutional", "label": "use deep convolutional", "shape": "dot", "size": 18.334637760216484, "title": "Node: use deep convolutional; Degree: 2; Community: 3"}, {"font": {"color": "black"}, "group": 1, "id": "metaheuristic algorithm global", "label": "metaheuristic algorithm global", "shape": "dot", "size": 12.0, "title": "Node: metaheuristic algorithm global; Degree: 1; Community: 1"}, {"font": {"color": "black"}, "group": 8, "id": "era large language", "label": "era large language", "shape": "dot", "size": 12.0, "title": "Node: era large language; Degree: 1; Community: 8"}, {"font": {"color": "black"}, "group": 0, "id": "base graph neural", "label": "base graph neural", "shape": "dot", "size": 12.0, "title": "Node: base graph neural; Degree: 1; Community: 0"}, {"font": {"color": "black"}, "group": 6, "id": "model knowledge graph", "label": "model knowledge graph", "shape": "dot", "size": 12.0, "title": "Node: model knowledge graph; Degree: 1; Community: 6"}]);
+                  edges = new vis.DataSet([{"from": "challenge large language", "to": "large language model"}, {"from": "prediction use machine", "to": "use machine learning"}, {"from": "use graph neural", "to": "graph neural network"}, {"from": "fine-tune large language", "to": "large language model"}, {"from": "use generative artificial", "to": "generative artificial intelligence"}, {"from": "strategy large language", "to": "large language model"}, {"from": "artificial intelligence method", "to": "explainable artificial intelligence"}, {"from": "generative large language", "to": "large language model"}, {"from": "fraud detection use", "to": "credit card fraud"}, {"from": "fraud detection use", "to": "card fraud detection"}, {"from": "fraud detection use", "to": "detection use machine"}, {"from": "prompt large language", "to": "large language model"}, {"from": "language model comprehensive", "to": "large language model"}, {"from": "graph large language", "to": "large language model"}, {"from": "language model agent", "to": "large language model"}, {"from": "graph neural network", "to": "heterogeneous graph neural"}, {"from": "graph neural network", "to": "attack graph neural"}, {"from": "graph neural network", "to": "neural network graph"}, {"from": "graph neural network", "to": "deep graph neural"}, {"from": "graph neural network", "to": "learning graph neural"}, {"from": "graph neural network", "to": "base graph neural"}, {"from": "artificial intelligence healthcare", "to": "explainable artificial intelligence"}, {"from": "artificial intelligence explainable", "to": "explainable artificial intelligence"}, {"from": "artificial intelligence explainable", "to": "intelligence explainable artificial"}, {"from": "neural network base", "to": "convolutional neural network"}, {"from": "algorithm global optimization", "to": "optimization algorithm global"}, {"from": "algorithm global optimization", "to": "global optimization problem"}, {"from": "algorithm global optimization", "to": "global optimization engineering"}, {"from": "algorithm global optimization", "to": "metaheuristic algorithm global"}, {"from": "algorithm global optimization", "to": "search algorithm global"}, {"from": "base large language", "to": "large language model"}, {"from": "language model meet", "to": "large language model"}, {"from": "retrieval-augment large language", "to": "large language model"}, {"from": "engineering design problem", "to": "optimization engineering design"}, {"from": "engineering design problem", "to": "global optimization engineering"}, {"from": "hallucination large language", "to": "large language model"}, {"from": "machine learning deep", "to": "learning deep learning"}, {"from": "machine learning deep", "to": "use machine learning"}, {"from": "machine learning deep", "to": "deep learning technique"}, {"from": "analysis large language", "to": "large language model"}, {"from": "classification use machine", "to": "use machine learning"}, {"from": "generation large language", "to": "large language model"}, {"from": "explainable artificial intelligence", "to": "intelligence explainable artificial"}, {"from": "explainable artificial intelligence", "to": "survey explainable artificial"}, {"from": "explainable artificial intelligence", "to": "use explainable artificial"}, {"from": "explainable artificial intelligence", "to": "learning explainable artificial"}, {"from": "explainable artificial intelligence", "to": "artificial intelligence framework"}, {"from": "explainable artificial intelligence", "to": "artificial intelligence technique"}, {"from": "explainable artificial intelligence", "to": "artificial intelligence model"}, {"from": "explainable artificial intelligence", "to": "artificial intelligence medical"}, {"from": "explainable artificial intelligence", "to": "artificial intelligence approach"}, {"from": "explainable artificial intelligence", "to": "artificial intelligence systematic"}, {"from": "analysis use deep", "to": "use deep learning"}, {"from": "base convolutional neural", "to": "convolutional neural network"}, {"from": "use machine learning", "to": "machine learning technique"}, {"from": "use machine learning", "to": "learning deep learning"}, {"from": "use machine learning", "to": "machine learning algorithm"}, {"from": "use machine learning", "to": "detection use machine"}, {"from": "use machine learning", "to": "machine learning approach"}, {"from": "use machine learning", "to": "machine learning method"}, {"from": "language model clinical", "to": "large language model"}, {"from": "language model medical", "to": "large language model"}, {"from": "convolutional neural network", "to": "deep convolutional neural"}, {"from": "convolutional neural network", "to": "graph convolutional neural"}, {"from": "convolutional neural network", "to": "use convolutional neural"}, {"from": "convolutional neural network", "to": "quantum convolutional neural"}, {"from": "convolutional neural network", "to": "neural network model"}, {"from": "convolutional neural network", "to": "use deep convolutional"}, {"from": "convolutional neural network", "to": "neural network architecture"}, {"from": "use artificial intelligence", "to": "artificial intelligence chatbot"}, {"from": "deep learning technique", "to": "use deep learning"}, {"from": "deep learning technique", "to": "learning deep learning"}, {"from": "use large language", "to": "large language model"}, {"from": "global optimization engineering", "to": "optimization engineering design"}, {"from": "language model use", "to": "large language model"}, {"from": "large language model", "to": "model large language"}, {"from": "large language model", "to": "language model large"}, {"from": "large language model", "to": "multimodal large language"}, {"from": "large language model", "to": "language model survey"}, {"from": "large language model", "to": "language model LLMs"}, {"from": "large language model", "to": "leverage large language"}, {"from": "large language model", "to": "learning large language"}, {"from": "large language model", "to": "era large language"}, {"from": "large language model", "to": "evaluation large language"}, {"from": "large language model", "to": "bias large language"}, {"from": "large language model", "to": "evaluate large language"}, {"from": "large language model", "to": "language model inference"}, {"from": "large language model", "to": "intelligence large language"}, {"from": "large language model", "to": "artificial intelligence large"}, {"from": "large language model", "to": "language model knowledge"}, {"from": "large language model", "to": "reasoning large language"}, {"from": "large language model", "to": "empower large language"}, {"from": "large language model", "to": "potential large language"}, {"from": "large language model", "to": "language model generate"}, {"from": "artificial intelligence artificial", "to": "intelligence artificial intelligence"}, {"from": "artificial intelligence artificial", "to": "generative artificial intelligence"}, {"from": "deep convolutional neural", "to": "use deep convolutional"}, {"from": "use deep learning", "to": "detection use deep"}, {"from": "use deep learning", "to": "image use deep"}, {"from": "credit card fraud", "to": "card fraud detection"}, {"from": "impact generative artificial", "to": "generative artificial intelligence"}, {"from": "language model knowledge", "to": "model knowledge graph"}, {"from": "language model large", "to": "model large language"}, {"from": "intelligence large language", "to": "artificial intelligence large"}, {"from": "artificial intelligence chatbot", "to": "generative artificial intelligence"}, {"from": "artificial intelligence model", "to": "generative artificial intelligence"}, {"from": "intelligence artificial intelligence", "to": "generative artificial intelligence"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"font": {"size": 20, "color": "black", "face": "arial", "strokeWidth": 2, "strokeColor": "#ffffff"}, "shape": "dot", "borderWidth": 1}, "physics": {"enabled": true, "solver": "forceAtlas2Based", "forceAtlas2Based": {"gravitationalConstant": -120, "centralGravity": 0.03, "springLength": 200, "springConstant": 0.12, "damping": 0.9, "avoidOverlap": 0.7}, "stabilization": {"enabled": true, "iterations": 520, "updateInterval": 25, "fit": true}, "maxVelocity": 25, "minVelocity": 0.5, "timestep": 0.35}, "configure": {"enabled": true, "filter": ["physics"]}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
